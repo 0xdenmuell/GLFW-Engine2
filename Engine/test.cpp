@@ -1,38 +1,53 @@
 #include "include/GLFW/glfw3.h"
+#include <iostream>
+#include <stdlib.h>
+
+void error_callback(int error, const char* description)
+{
+	std::cout << "Error " << error << ": " << description;
+}
+
+void timer(double duration) {
+	glfwSetTime(0);
+	do {} while (glfwGetTime() <= duration);
+}
+
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
 
 int main(void)
 {
+	glfwSetErrorCallback(error_callback);
 
-    GLFWwindow* window;
+	/* Initialize the library */
+	if (!glfwInit())
+		return -1;
 
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
+	/* Create a windowed mode window and its OpenGL context */
+	GLFWwindow* window = glfwCreateWindow(800, 800, "GLFW Window", NULL, NULL);
+	if (!window)
+	{
+		glfwTerminate();
+		return -1;
+	}
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
+	glfwMakeContextCurrent(window);
+	glfwSetKeyCallback(window, key_callback);
 
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
+	int counter = 0;
 
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+	while (!glfwWindowShouldClose(window))
+	{
+		glfwPollEvents();
+		// Keep running
+	}
 
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+	glfwDestroyWindow(window);
+	glfwTerminate();
 
-        /* Poll for and process events */
-        glfwPollEvents();
-    }
 
-    glfwTerminate();
-    return 0;
+	return 0;
 }
