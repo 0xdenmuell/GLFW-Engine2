@@ -1,0 +1,6 @@
+[submodule "Engine/include/stb"]
+	path = Engine/include/stb
+	url = https://github.com/nothings/stb.git
+[submodule "Engine/include/glm"]
+	path = Engine/include/glm
+	url = https://github.com/g-truc/glm.git
