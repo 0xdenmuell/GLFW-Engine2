@@ -12,8 +12,6 @@
 class Shader
 {
 public:
-    unsigned int ID;
-
     Shader(const char* vertexPath, const char* fragmentPath)
     {
         std::string vertexCode;
@@ -68,6 +66,10 @@ public:
         glDeleteShader(fragment);
     }
 
+    unsigned int getShaderID() {
+        return ID;
+    }
+
     void use()
     {
         glUseProgram(ID);
@@ -89,6 +91,7 @@ public:
     }
 
 private:
+    unsigned int ID;
 
     void checkCompileErrors(unsigned int shader, std::string type)
     {

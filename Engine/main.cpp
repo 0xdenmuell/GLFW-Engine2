@@ -19,8 +19,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void window_size_callback(GLFWwindow* window, int width, int height);
 
-unsigned int SCR_WIDTH = 1080;
-unsigned int SCR_HEIGHT = 720;
+unsigned int SCR_WIDTH = 3840;
+unsigned int SCR_HEIGHT = 2160;
+
+
+float mixValue = 0.5f;
 
 int main(void)
 {
@@ -51,24 +54,24 @@ int main(void)
 
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-	Shader ShaderProgram("C:\\dev\\GLFW-Engine\\GLFW-Engine2\\Engine\\vertices.glsl",
-						 "C:\\dev\\GLFW-Engine\\GLFW-Engine2\\Engine\\fragment.glsl");
+	Shader ShaderProgram("E:\\dev\\GLFW-Engine2\\Engine\\vertices.glsl",
+		"E:\\dev\\GLFW-Engine2\\Engine\\fragment.glsl");
 
 
 
 	float vertices[] = {
 		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   3.0f, 3.0f, // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   3.0f, 0.0f, // bottom right
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 3.0f  // top left 
 	};
 	unsigned int indices[] = {
 	   0, 1, 3, // first triangle
 	   1, 2, 3  // second triangle
 	};
 
-	
+
 	//bind buffer
 	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
@@ -105,7 +108,7 @@ int main(void)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	unsigned char* data = stbi_load("C:\\dev\\GLFW-Engine\\GLFW-Engine2\\Engine\\container.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("E:\\dev\\GLFW-Engine2\\Engine\\container.jpg", &width, &height, &nrChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -121,13 +124,16 @@ int main(void)
 	glGenTextures(1, &texture2);
 	glBindTexture(GL_TEXTURE_2D, texture2);
 
+	int nrAttributes;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	// set texture filtering parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	data = stbi_load("C:\\dev\\GLFW-Engine\\GLFW-Engine2\\Engine\\shrek.png", &width, &height, &nrChannels, 0);
+	data = stbi_load("E:\\dev\\GLFW-Engine2\\Engine\\shrek.png", &width, &height, &nrChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -140,9 +146,8 @@ int main(void)
 	stbi_image_free(data);
 
 	ShaderProgram.use();
+	ShaderProgram.setInt("texture1", 0);
 	ShaderProgram.setInt("texture2", 1);
-
-	glUniform1i(glGetUniformLocation(ShaderProgram.ID, "texture1"), 0);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -163,6 +168,9 @@ int main(void)
 
 		glBindVertexArray(VAO);
 
+		ShaderProgram.setFloat("mixValue", mixValue);
+
+
 		ShaderProgram.use();
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -181,6 +189,7 @@ int main(void)
 	return 0;
 }
 
+
 void error_callback(int error, const char* description)
 {
 	std::cout << "ERROR::GLFW::error_callback" << error << ": " << description;
@@ -198,10 +207,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		return;
 	}
 
-	if (key != 0 && action == GLFW_PRESS)
-	{
-		std::cout << glfwGetKeyName(key, scancode);
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+		mixValue = 0.8;
 	}
+
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+		mixValue = 0.2;
+	}
+
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {
