@@ -155,7 +155,10 @@
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClInclude Include="include\camera\camera.h" />
     <ClInclude Include="include\glad\glad.h" />
+    <ClInclude Include="include\GLFW\glfw3.h" />
+    <ClInclude Include="include\shader\shader.h" />
     <ClInclude Include="include\stb\stb_image.h" />
     <ClInclude Include="include\std_image.h" />
   </ItemGroup>
