@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-#define LOG(msg) std::cout << msg << std::endl;
+#define LOG(msg) std::cout << msg << std::endl
 
 
 void error_callback(int error, const char* description);
@@ -20,6 +20,8 @@ void error_callback(int error, const char* description);
 bool timer(double duration, const char* modus);
 
 void processInput(GLFWwindow* window);
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 void window_size_callback(GLFWwindow* window, int width, int height);
 
@@ -29,6 +31,9 @@ float SCR_HEIGHT = 1080;
 float mixValue = 0.5f;
 
 Camera cam;
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
 
 int main(void)
 {
@@ -41,10 +46,13 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	//Disable VSync
+	//glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
+
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "GLFW Window", NULL, NULL);
 	if (!window)
 	{
-		LOG("Failed to initialize GLFW")
+		LOG("Failed to initialize GLFW");
 			glfwTerminate();
 		return -1;
 	}
@@ -57,6 +65,9 @@ int main(void)
 	}
 
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	Shader ShaderProgram("E:\\dev\\GLFW-Engine2\\Engine\\vertices.glsl",
 		"E:\\dev\\GLFW-Engine2\\Engine\\fragment.glsl");
@@ -205,8 +216,17 @@ int main(void)
 	glfwSetWindowSizeCallback(window, window_size_callback);
 	glEnable(GL_DEPTH_TEST);
 
+	float currentFrame;
+
+
 	while (!glfwWindowShouldClose(window))
 	{
+		currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+
+
 		processInput(window);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -314,11 +334,55 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		cam.setCamPos(cam.getCamPos() + glm::normalize(glm::cross(cam.getCamTarget(), cam.getUpVector())) * cam.getCamSpeed());
 	}
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+		//Zoom In
+		cam.setFOV(20.0f);
+	}
+	
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
+		//Zoom Out
+		cam.setFOV(90.0f);
+	}
+	
+
+}
+
+float lastX = 400;
+float lastY = 300;
+float yaw = 90.0f;
+float pitch = 0;
+
+void mouse_callback(GLFWwindow* window, double posX, double posY) {
+
+	float offsetX = posX - lastX;
+	float offsetY = lastY - posY;
+	lastX = posX;
+	lastY = posY;
+
+	const float sensitivity = 0.1f;
+	offsetX *= sensitivity;
+	offsetY *= sensitivity;
+
+	yaw += offsetX;
+	pitch += offsetY;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	glm::vec3 direction;
+
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cam.setCamTarget(glm::normalize(direction));
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {
 	SCR_HEIGHT = height;
 	SCR_WIDTH = width;
-	LOG(SCR_HEIGHT); LOG(SCR_WIDTH);
+	LOG("Höhe: " << SCR_HEIGHT); LOG("Breite: " << SCR_WIDTH);
 	glViewport(0, 0, SCR_HEIGHT, SCR_WIDTH);
 }

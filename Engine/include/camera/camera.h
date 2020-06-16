@@ -10,28 +10,39 @@
 
 extern float SCR_WIDTH;
 extern float SCR_HEIGHT;
+extern float deltaTime;
+
+#define LOG(msg) std::cout << msg << std::endl
 
 class Camera
 {
 public:
 	Camera() {
-		camPos =		glm::vec3(0.0f, 0.0f, 3.0f);
-		camTarget =		glm::vec3(0.0f, 0.0f, -1.0f);
-		camDistance =	glm::normalize(camPos - camTarget);
-		upVector =		glm::vec3(0.0f, 1.0f, 0.0f);
-		camRight =		glm::normalize(glm::cross(upVector, camDistance));
-		camUp =			glm::cross(camDistance, camRight);
+		camPos = glm::vec3(0.0f, 0.0f, 3.0f);
+		camTarget = glm::vec3(0.0f, 0.0f, -1.0f);
+		camDistance = glm::normalize(camPos - camTarget);
+		upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+		camRight = glm::normalize(glm::cross(upVector, camDistance));
+		camUp = glm::cross(camDistance, camRight);
 
-		model =			glm::mat4(1.0f);
-		view =			glm::mat4(1.0f);
-		projection =	glm::mat4(1.0f);
+		model = glm::mat4(1.0f);
+		view = glm::mat4(1.0f);
+		projection = glm::mat4(1.0f);
 
-		view =			glm::lookAt(camPos, camTarget, upVector);
-		projection =	glm::perspective(glm::radians(90.0f), SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
+		currentFOV = 90.0f;
+
+		view = glm::lookAt(camPos, camTarget, upVector);
+		projection = glm::perspective(glm::radians(currentFOV), SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
+
+		camSpeed = 2.50f * deltaTime;
 	}
 
 	//GET
-	float getCamSpeed() { return camSpeed; }
+	float getCamSpeed() {
+		camSpeed = 2.50f * deltaTime;
+		return camSpeed;
+	}
+
 	glm::vec3 getCamPos() { return camPos; }
 	glm::vec3 getCamTarget() { return camTarget; }
 	glm::vec3 getCamDistance() { return camDistance; }
@@ -39,11 +50,31 @@ public:
 	glm::vec3 getCamRight() { return camRight; }
 	glm::vec3 getCamUp() { return camUp; }
 	glm::mat4 getModel() { return model; }
-	glm::mat4 getView() { 
+
+	glm::mat4 getView() {
 		view = glm::lookAt(camPos, camTarget + camPos, upVector);
-		return view; 
+		return view;
 	}
-	glm::mat4 getProjection() { return projection; }
+
+	glm::mat4 getProjection() {
+
+		LOG(currentFOV);
+
+		if (!(currentFOV == newFOV))
+		{
+			if (currentFOV > newFOV)
+			{
+				currentFOV -= 5;
+			}
+			else 
+			{
+				currentFOV += 5;
+			}
+		}
+
+		projection = glm::perspective(glm::radians(currentFOV), SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
+		return projection;
+	}
 
 	//SET
 	void setCamPos(glm::vec3 newCamPos) { camPos = newCamPos; }
@@ -54,6 +85,10 @@ public:
 	void setModel(glm::mat4 newModel) { model = newModel; }
 	void setView(glm::mat4 newView) { view = newView; }
 	void setProjection(glm::mat4 newProjection) { projection = newProjection; }
+
+	void setFOV(float setFOV) {
+		newFOV = setFOV;
+	}
 
 private:
 
@@ -68,6 +103,9 @@ private:
 	glm::mat4 view;
 	glm::mat4 projection;
 
-	const float camSpeed = 0.05f;
+	float currentFOV;
+	float newFOV;
+
+	float camSpeed;
 };
 #endif
