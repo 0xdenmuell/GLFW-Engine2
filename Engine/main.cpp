@@ -30,7 +30,7 @@ float SCR_HEIGHT = 1080;
 
 float mixValue = 0.5f;
 
-Camera cam;
+Camera cam(glm::vec3(0.0f, 1.0f, 0.0f));
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -133,7 +133,6 @@ int main(void)
 	   0, 1, 3, // first triangle
 	   1, 2, 3  // second triangle
 	};
-
 
 	//bind buffer
 	unsigned int VBO, VAO, EBO;
@@ -344,7 +343,6 @@ void processInput(GLFWwindow* window)
 		//Zoom Out
 		cam.setFOV(90.0f);
 	}
-	
 
 }
 
