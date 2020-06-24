@@ -16,6 +16,13 @@ extern float deltaTime;
 #define vec3LOG(vec3) std::cout << vec3.x << "|" << vec3.y << "|" << vec3.z << std::endl
 
 
+enum camDirections {
+	FORWARD = 1,
+	BACKWARDS = 2,
+	LEFT = 3,
+	RIGHT = 4
+};
+
 class Camera
 {
 public:
@@ -38,8 +45,36 @@ public:
 	glm::mat4 getView() { return view; }
 	glm::mat4 getProjection() { return projection; }
 	float getCamSpeed() { return camSpeed; }
+	float getCamSpeedFixed() { return camSpeedFixed; }
 
 	//SET
+
+	void moveCam(camDirections Direction) {
+		switch (Direction)
+		{
+		case FORWARD:
+			camPos = camPos + (camSpeedFixed * camTarget);
+			break;
+
+		case BACKWARDS:
+			camPos = camPos - (camSpeedFixed * camTarget);
+			break;
+
+		case LEFT:
+			camPos = camPos - (glm::normalize(glm::cross(camTarget, upVector)) * camSpeedFixed);
+			break;
+
+		case RIGHT:
+			camPos = camPos + (glm::normalize(glm::cross(camTarget, upVector)) * camSpeedFixed);
+			break;
+
+		default:
+			LOG("ERROR::CAMERA::DEFAULT_INPUT");
+			break;
+		}
+	}
+
+
 	void setCamPos(glm::vec3 newCamPos) { camPos = newCamPos; UpdateValues(); }
 	void setCamTarget(glm::vec3 newCamTarget) { camTarget = newCamTarget; UpdateValues(); }
 	void setCamDistance(glm::vec3 newCamDistance) { camDistance = newCamDistance; UpdateValues(); }
@@ -49,23 +84,24 @@ public:
 	void setView(glm::mat4 newView) { view = newView; UpdateValues(); }
 	void setProjection(glm::mat4 newProjection) { projection = newProjection; UpdateValues(); }
 	void setFOV(float setFOV) { newFOV = setFOV; UpdateValues(); }
+	void setSpeed(float speed) { camSpeed = speed; UpdateValues(); }
 
 	//UPDATE
 	void UpdateValues() {
 		camDistance = glm::normalize(camPos - camTarget);
 		camRight = glm::normalize(glm::cross(upVector, camDistance));
 		camUp = glm::cross(camDistance, camRight);
-		camSpeed = 2.50f * deltaTime;
+		camSpeedFixed = camSpeed * deltaTime;
 
 		if (!(currentFOV == newFOV))
 		{
 			if ((!(currentFOV == newFOV)) && currentFOV > newFOV)
 			{
-				currentFOV -= 5;
+				currentFOV -= (5 * deltaTime);
 			}
 			else
 			{
-				currentFOV += 5;
+				currentFOV += (5 * deltaTime);
 			}
 		}
 
@@ -89,6 +125,7 @@ private:
 	float currentFOV;
 	float newFOV;
 
-	float camSpeed;
+	float camSpeedFixed;
+	float camSpeed = 2.50f;
 };
 #endif
