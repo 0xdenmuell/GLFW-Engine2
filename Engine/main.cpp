@@ -14,6 +14,7 @@
 #include <iostream>
 
 #define LOG(msg) std::cout << msg << std::endl
+#define vec3LOG(vec3) std::cout << vec3.x << "|" << vec3.y << "|" << vec3.z << std::endl
 
 
 void error_callback(int error, const char* description);
@@ -32,12 +33,6 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 bool debug;
-
-
-glm::vec3 cubePositions[] = {
-glm::vec3(2.0f,  0.0f, -5.0f),
-glm::vec3(0.0f,  0.0f,  0.0f),
-};
 
 int main(void)
 {
@@ -74,11 +69,11 @@ int main(void)
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetKeyCallback(window, key_callback);
 
-	Shader cubeProgram("E:\\dev\\GLFW-Engine2\\Engine\\cubeVertices.glsl",
-		"E:\\dev\\GLFW-Engine2\\Engine\\cubeFragment.glsl");
+	Shader cubeProgram("E:\\dev\\GLFW-Engine2\\Engine\\glsl\\cubeVertices.glsl",
+		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\cubeFragment.glsl");
 
-	Shader lightProgram("E:\\dev\\GLFW-Engine2\\Engine\\lightVertices.glsl",
-		"E:\\dev\\GLFW-Engine2\\Engine\\lightFragment.glsl");
+	Shader lightProgram("E:\\dev\\GLFW-Engine2\\Engine\\glsl\\lightVertices.glsl",
+		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\lightFragment.glsl");
 
 	float vertices[] = {
 		// position				// unit
@@ -125,6 +120,12 @@ int main(void)
 		-0.5f,  0.5f, -0.5f,	0.0f,  1.0f,  0.0f
 	};
 
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f, 0.0f),
+		glm::vec3(0.0f,  2.5f, 1.0f)
+	};
+
+
 
 
 	//bind buffer
@@ -157,6 +158,8 @@ int main(void)
 	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
+
+
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	glfwSetFramebufferSizeCallback(window, window_size_callback);
@@ -168,8 +171,6 @@ int main(void)
 
 	while (!glfwWindowShouldClose(window))
 	{
-
-
 		currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -181,10 +182,14 @@ int main(void)
 
 		//CUBE
 		cubeProgram.use();
+		LOG(cam.getCamCurrentFOV());
+
+		cubePositions[1] = glm::vec3(glm::sin(glfwGetTime()) * 2, cubePositions[1].y, glm::cos(glfwGetTime()) * 2);
 
 		cubeProgram.setVec3("objectColor", objectColor);
 		cubeProgram.setVec3("lightColor", lightColor);
 		cubeProgram.setVec3("lightPos", glm::vec3(cubePositions[1].x, cubePositions[1].y, cubePositions[1].z));
+		cubeProgram.setVec3("viewPos", cam.getCamPos());
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, cubePositions[0]);
@@ -266,6 +271,7 @@ bool timer(double duration, const char* modus)
 }
 
 void processInput(GLFWwindow* window)
+//to do: enum codes
 {
 	//Quit Application
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -300,21 +306,21 @@ void processInput(GLFWwindow* window)
 	//ZOOM
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
 		//Zoom In
-		cam.setFOV(20.0f);
+		cam.setFOV(ZOOM_IN);
 	}
 
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
 		//Zoom Out
-		cam.setFOV(90.0f);
+		cam.setFOV(ZOOM_OUT);
 	}
 
 	//DEBUG
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		cubePositions[0].z += 0.1;
+
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		cubePositions[0].z -= 0.1;
+
 	}
 }
 
@@ -322,10 +328,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (key == GLFW_KEY_V && action == GLFW_PRESS) {
 		if (!debug)
-		{			
+		{
 		}
 		else
-		{		
+		{
 		}
 	}
 }

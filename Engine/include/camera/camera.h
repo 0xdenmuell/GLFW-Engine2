@@ -14,6 +14,7 @@ extern float deltaTime;
 
 #define LOG(msg) std::cout << msg << std::endl
 #define vec3LOG(vec3) std::cout << vec3.x << "|" << vec3.y << "|" << vec3.z << std::endl
+#define vec4LOG(vec3) std::cout << vec3.x << "|" << vec3.y << "|" << vec3.z << "|" << vec3.w << std::endl
 
 
 enum camDirections {
@@ -23,10 +24,15 @@ enum camDirections {
 	RIGHT = 4
 };
 
+enum cameraZoom {
+	ZOOM_IN = 20,
+	ZOOM_OUT = 110
+};
+
 class Camera
 {
 public:
-	Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 target = glm::vec3(0.0f, 1.0f, 0.0f), float fov = 90.0f)
+	Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 target = glm::vec3(0.0f, 1.0f, 0.0f), int fov = 110)
 	{
 		camPos = position;
 		camTarget = target;
@@ -46,6 +52,7 @@ public:
 	glm::mat4 getProjection() { return projection; }
 	float getCamSpeed() { return camSpeed; }
 	float getCamSpeedFixed() { return camSpeedFixed; }
+	float getCamCurrentFOV() { return currentFOV; }
 
 	//SET
 
@@ -83,7 +90,7 @@ public:
 	void setModel(glm::mat4 newModel) { model = newModel; UpdateValues(); }
 	void setView(glm::mat4 newView) { view = newView; UpdateValues(); }
 	void setProjection(glm::mat4 newProjection) { projection = newProjection; UpdateValues(); }
-	void setFOV(float setFOV) { newFOV = setFOV; UpdateValues(); }
+	void setFOV(int setFOV) { newFOV = setFOV; UpdateValues(); }
 	void setSpeed(float speed) { camSpeed = speed; UpdateValues(); }
 
 	//UPDATE
@@ -95,18 +102,19 @@ public:
 
 		if (!(currentFOV == newFOV))
 		{
-			if ((!(currentFOV == newFOV)) && currentFOV > newFOV)
+			if (currentFOV > newFOV)
 			{
-				currentFOV -= (5 * deltaTime);
+				currentFOV -= (100 * deltaTime);
 			}
 			else
 			{
-				currentFOV += (5 * deltaTime);
+				currentFOV += (100 * deltaTime);
 			}
+			currentFOV == newFOV;
 		}
 
 		view = glm::lookAt(camPos, camTarget + camPos, upVector);
-		projection = glm::perspective(glm::radians(currentFOV), SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians((float)currentFOV), SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
 	}
 
 private:
@@ -122,7 +130,7 @@ private:
 	glm::mat4 view;
 	glm::mat4 projection;
 
-	float currentFOV;
+	int currentFOV;
 	float newFOV;
 
 	float camSpeedFixed;
