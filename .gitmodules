@@ -7,6 +7,3 @@
 [submodule "Engine/submodules/glfw"]
 	path = Engine/submodules/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "Engine/submodules"]
-	path = Engine/submodules
-
