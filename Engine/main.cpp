@@ -1,7 +1,5 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
 
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>
@@ -12,6 +10,7 @@
 #include <shader/shader.h>
 
 #include <iostream>
+#include <vector>
 
 #define LOG(msg) std::cout << msg << std::endl
 #define vec3LOG(vec3) std::cout << vec3.x << "|" << vec3.y << "|" << vec3.z << std::endl
@@ -33,6 +32,7 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 bool debug;
+MaterialType material;
 
 int main(void)
 {
@@ -69,64 +69,64 @@ int main(void)
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetKeyCallback(window, key_callback);
 
-	Shader cubeProgram("E:\\dev\\GLFW-Engine2\\Engine\\glsl\\cubeVertices.glsl",
-		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\cubeFragment.glsl");
-
-	Shader lightProgram("E:\\dev\\GLFW-Engine2\\Engine\\glsl\\lightVertices.glsl",
-		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\lightFragment.glsl");
+	Shader cubeProgram(
+		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\cubeVertices.glsl",
+		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\cubeFragment.glsl"
+	);
+	Shader lightProgram(
+		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\lightVertices.glsl",
+		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\lightFragment.glsl"
+	);
 
 	float vertices[] = {
-		// position				// unit
-		-0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f,
-		 0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,	0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,	0.0f,  0.0f, -1.0f,
-		-0.5f,  0.5f, -0.5f,	0.0f,  0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f,
+		// positions          // normals           // texture coords
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 
-		-0.5f, -0.5f,  0.5f,	0.0f,  0.0f,  1.0f,
-		 0.5f, -0.5f,  0.5f,	0.0f,  0.0f,  1.0f,
-		 0.5f,  0.5f,  0.5f,	0.0f,  0.0f,  1.0f,
-		 0.5f,  0.5f,  0.5f,	0.0f,  0.0f,  1.0f,
-		-0.5f,  0.5f,  0.5f,	0.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f,  0.5f,	0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
 
-		-0.5f,  0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,	-1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,	-1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-		 0.5f,  0.5f,  0.5f,	1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,	1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,	1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,	1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,	1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,	1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-		-0.5f, -0.5f, -0.5f,	0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,	0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,	0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,	0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,	0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,	0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
 
-		-0.5f,  0.5f, -0.5f,	0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,	0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,	0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,	0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,	0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,	0.0f,  1.0f,  0.0f
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 	};
 
 	glm::vec3 cubePositions[] = {
 		glm::vec3(0.0f,  0.0f, 0.0f),
-		glm::vec3(0.0f,  2.5f, 1.0f)
+		glm::vec3(1.0f,  2.0f, 3.0f)
 	};
-
-
-
 
 	//bind buffer
 	unsigned int VBO, cubeVAO;
@@ -139,35 +139,44 @@ int main(void)
 	glBindVertexArray(cubeVAO);
 
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// unit attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
-	unsigned int lightVAO;
-	glGenVertexArrays(1, &lightVAO);
+	unsigned int lightCubeVAO;
+	glGenVertexArrays(1, &lightCubeVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBindVertexArray(lightVAO);
+	glBindVertexArray(lightCubeVAO);
 
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
+	unsigned int diffuseMap = cubeProgram.loadTexture("E:\\dev\\GLFW-Engine2\\Engine\\container2.png");
+	unsigned int specularMap = cubeProgram.loadTexture("E:\\dev\\GLFW-Engine2\\Engine\\container2_specular.png");
 
+	cubeProgram.use();
+	cubeProgram.setInt("material.diffuse", 0);
+	cubeProgram.setInt("material.specular", 1);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	glfwSetFramebufferSizeCallback(window, window_size_callback);
-
 	glfwSetWindowSizeCallback(window, window_size_callback);
+
 	glEnable(GL_DEPTH_TEST);
 
 	float currentFrame;
+
+
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -177,20 +186,29 @@ int main(void)
 
 		processInput(window);
 
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//CUBE
 		cubeProgram.use();
-		LOG(cam.getCamCurrentFOV());
 
-		cubePositions[1] = glm::vec3(glm::sin(glfwGetTime()) * 2, cubePositions[1].y, glm::cos(glfwGetTime()) * 2);
-
+		//COLOR
 		cubeProgram.setVec3("objectColor", objectColor);
-		cubeProgram.setVec3("lightColor", lightColor);
-		cubeProgram.setVec3("lightPos", glm::vec3(cubePositions[1].x, cubePositions[1].y, cubePositions[1].z));
 		cubeProgram.setVec3("viewPos", cam.getCamPos());
 
+		//MATERIAL & TEXTURE 
+		cubeProgram.setMaterial(material);
+
+		//LIGHT STRENGTH OF CUBE
+		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+
+		cubeProgram.setVec3("light.lightPos", glm::vec3(cubePositions[1].x, cubePositions[1].y, cubePositions[1].z));
+		cubeProgram.setVec3("light.ambient", ambientColor);
+		cubeProgram.setVec3("light.diffuse", diffuseColor);
+		cubeProgram.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+		//PERSPECTIVES
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, cubePositions[0]);
 
@@ -198,10 +216,18 @@ int main(void)
 		cubeProgram.setMatrix4("view", cam.getView());
 		cubeProgram.setMatrix4("projection", cam.getProjection());
 
+		//ASSIGN TEXTURE TO BUFFER
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap);
+
+
 		glBindVertexArray(cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		//LIGHT
+		//LIGHTCUBE
 		lightProgram.use();
 
 		lightProgram.setVec3("lightColor", lightColor);
@@ -213,7 +239,7 @@ int main(void)
 		lightProgram.setMatrix4("view", cam.getView());
 		lightProgram.setMatrix4("projection", cam.getProjection());
 
-		glBindVertexArray(lightVAO);
+		glBindVertexArray(lightCubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glfwSwapBuffers(window);
@@ -222,7 +248,7 @@ int main(void)
 	}
 
 	glDeleteVertexArrays(1, &cubeVAO);
-	glDeleteVertexArrays(1, &lightVAO);
+	glDeleteVertexArrays(1, &lightCubeVAO);
 	glDeleteBuffers(1, &VBO);
 
 	glfwDestroyWindow(window);
@@ -326,13 +352,13 @@ void processInput(GLFWwindow* window)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
-	if (key == GLFW_KEY_V && action == GLFW_PRESS) {
-		if (!debug)
-		{
-		}
-		else
-		{
-		}
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+		material = MaterialType(material + 1);
+		LOG(material);
+	}
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+		material = MaterialType(material - 1);
+		LOG(material);
 	}
 }
 

@@ -169,10 +169,10 @@
     <None Include="Debug\Engine.tlog\CL.command.1.tlog" />
     <None Include="Debug\Engine.tlog\Engine.lastbuildstate" />
     <None Include="Debug\Engine.tlog\unsuccessfulbuild" />
-    <None Include="lightFragment.glsl" />
-    <None Include="cubeFragment.glsl" />
-    <None Include="cubeVertices.glsl" />
-    <None Include="lightVertices.glsl" />
+    <None Include="glsl\cubeFragment.glsl" />
+    <None Include="glsl\cubeVertices.glsl" />
+    <None Include="glsl\lightFragment.glsl" />
+    <None Include="glsl\lightVertices.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="container.jpg" />

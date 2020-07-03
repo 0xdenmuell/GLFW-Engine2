@@ -55,7 +55,6 @@ public:
 	float getCamCurrentFOV() { return currentFOV; }
 
 	//SET
-
 	void moveCam(camDirections Direction) {
 		switch (Direction)
 		{
