@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <glfw/include/GLFW/glfw3.h>
 
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>

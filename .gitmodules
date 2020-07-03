@@ -1,6 +1,12 @@
-[submodule "Engine/include/stb"]
-	path = Engine/include/stb
+[submodule "Engine/submodules/stb"]
+	path = Engine/submodules/stb
 	url = https://github.com/nothings/stb.git
-[submodule "Engine/include/glm"]
-	path = Engine/include/glm
+[submodule "Engine/submodules/glm"]
+	path = Engine/submodules/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "Engine/submodules/glfw"]
+	path = Engine/submodules/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "Engine/submodules"]
+	path = Engine/submodules
+

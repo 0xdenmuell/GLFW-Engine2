@@ -75,7 +75,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(ProjectDir)\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\include;$(ProjectDir)\submodules;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -153,13 +153,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\glad\glad.c" />
+    <ClCompile Include="submodules\glad\glad.c" />
     <ClCompile Include="main.cpp" />
     <ClInclude Include="include\camera\camera.h" />
-    <ClInclude Include="include\glad\glad.h" />
+    <ClInclude Include="submodules\glad\glad.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
     <ClInclude Include="include\shader\shader.h" />
-    <ClInclude Include="include\stb\stb_image.h" />
+    <ClInclude Include="submodules\KHR\khrplatform.h" />
+    <ClInclude Include="submodules\stb\stb_image.h" />
     <ClInclude Include="include\std_image.h" />
   </ItemGroup>
   <ItemGroup>
