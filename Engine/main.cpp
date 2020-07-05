@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <vector>
+#include <direct.h>
 
 #define LOG(msg) std::cout << msg << std::endl
 #define vec3LOG(vec3) std::cout << vec3.x << "|" << vec3.y << "|" << vec3.z << std::endl
@@ -69,14 +70,13 @@ int main(void)
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetKeyCallback(window, key_callback);
 
-	Shader cubeProgram(
-		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\cubeVertices.glsl",
-		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\cubeFragment.glsl"
-	);
-	Shader lightProgram(
-		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\lightVertices.glsl",
-		"E:\\dev\\GLFW-Engine2\\Engine\\glsl\\lightFragment.glsl"
-	);
+	char buff[FILENAME_MAX];
+	_getcwd(buff, FILENAME_MAX);
+
+	std::string currentPath = buff;
+
+	Shader cubeProgram(currentPath, CUBE);
+	Shader lightProgram(currentPath, LIGHT);
 
 	float vertices[] = {
 		// positions          // normals           // texture coords
@@ -160,8 +160,8 @@ int main(void)
 	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	unsigned int diffuseMap = cubeProgram.loadTexture("E:\\dev\\GLFW-Engine2\\Engine\\container2.png");
-	unsigned int specularMap = cubeProgram.loadTexture("E:\\dev\\GLFW-Engine2\\Engine\\container2_specular.png");
+	unsigned int diffuseMap = cubeProgram.loadTexture(WOODENBOX);
+	unsigned int specularMap = cubeProgram.loadTexture(WOODENBOXFRAME);
 
 	cubeProgram.use();
 	cubeProgram.setInt("material.diffuse", 0);

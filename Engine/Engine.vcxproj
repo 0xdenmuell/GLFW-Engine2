@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\utilityFunc.h" />
     <ClCompile Include="submodules\glad\glad.c" />
     <ClCompile Include="main.cpp" />
     <ClInclude Include="include\camera\camera.h" />
@@ -176,7 +177,7 @@
     <None Include="glsl\lightVertices.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="container.jpg" />
+    <Image Include="ressources\colorful.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

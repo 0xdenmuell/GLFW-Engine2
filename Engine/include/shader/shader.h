@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <utilityFunc.h>
 
 enum MaterialType
 {
@@ -19,11 +20,42 @@ enum MaterialType
 	yellowPlastic, blackRubber, cyanRubber, greenRubber, redRubber, whiteRubber, yellowRubber
 };
 
+enum Objects
+{
+	CUBE, LIGHT
+};
+
+enum Textures {
+	COLORFUL, SHREK, WOODENBOX, WOODENBOXFRAME
+};
+
 class Shader
 {
 public:
-	Shader(const char* vertexPath, const char* fragmentPath)
+	Shader(std::string path, Objects object)
 	{
+		currentPath = path;
+		std::string vertexPath;
+		std::string	fragmentPath;
+
+		switch (object)
+		{
+		case CUBE:
+			vertexPath = path + cubeVerticesPath;
+			fragmentPath = path + cubeFragmentPath;
+			break;
+		case LIGHT:
+			vertexPath = path + lightVerticesPath;
+			fragmentPath = path + lightFragmentPath;
+			break;
+		default:
+			LOG("NO OBJECT SELECTED (DEFAULT CASE");
+			break;
+		}
+
+		char* vertexPath_c = UtilityFunc::StringToChar(vertexPath);
+		char* fragmentPath_c = UtilityFunc::StringToChar(fragmentPath);
+
 		std::string vertexCode;
 		std::string fragmentCode;
 
@@ -34,8 +66,8 @@ public:
 		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		try
 		{
-			vShaderFile.open(vertexPath);
-			fShaderFile.open(fragmentPath);
+			vShaderFile.open(UtilityFunc::StringToChar(vertexPath_c));
+			fShaderFile.open(UtilityFunc::StringToChar(fragmentPath_c));
 			std::stringstream vShaderStream, fShaderStream;
 
 			vShaderStream << vShaderFile.rdbuf();
@@ -107,7 +139,7 @@ public:
 	}
 	void setMaterial(MaterialType material) {
 		switch (material)
-		{	
+		{
 		case emerald:
 			setVec3("material.specular", glm::vec3(0.633f, 0.727811f, 0.633f));
 			setFloat("material.shininess", 76.8f);
@@ -128,14 +160,33 @@ public:
 			break;
 		}
 	}
-	unsigned int loadTexture(const char* path) {
+	unsigned int loadTexture(Textures texture) {
 
+		std::string texturePath;
+
+		switch (texture)
+		{
+		case COLORFUL:
+			texturePath = currentPath + colorfulTexturePath;
+			break;
+		case SHREK:
+			texturePath = currentPath + shrekTexturePath;
+			break;
+		case WOODENBOX:
+			texturePath = currentPath + woodenBoxTexturePath;
+			break;
+		case WOODENBOXFRAME:
+			texturePath = currentPath + woodenBoxFrameTexturePath;
+			break;
+		default:
+			break;
+		}
 		unsigned int textureID;
 		glGenTextures(1, &textureID);
 
 		int width, height, channels;
-		unsigned char* texture = stbi_load(path, &width, &height, &channels, 0);
-		if (texture)
+		unsigned char* textureData = stbi_load(UtilityFunc::StringToChar(texturePath), &width, &height, &channels, 0);
+		if (textureData)
 		{
 			GLenum format;
 			if (channels == 1)
@@ -146,7 +197,7 @@ public:
 				format = GL_RGBA;
 
 			glBindTexture(GL_TEXTURE_2D, textureID);
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, texture);
+			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, textureData);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -154,19 +205,30 @@ public:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			stbi_image_free(texture);
+			stbi_image_free(textureData);
 		}
 		else
 		{
-			LOG("TEXTURE FAILED TO LOAD AT PATH: " << path);
-			stbi_image_free(texture);
+			LOG("TEXTURE FAILED TO LOAD AT PATH: " << texturePath);
+			stbi_image_free(textureData);
 		}
-		LOG(textureID);
 		return textureID;
 	}
 
 private:
 	unsigned int ID;
+
+	std::string currentPath;
+
+	std::string cubeVerticesPath = "\\glsl\\cubeVertices.glsl";
+	std::string cubeFragmentPath = "\\glsl\\cubeFragment.glsl";
+	std::string lightVerticesPath = "\\glsl\\lightVertices.glsl";
+	std::string lightFragmentPath = "\\glsl\\lightFragment.glsl";
+
+	std::string colorfulTexturePath = "\\ressources\\colorful.jpg";
+	std::string shrekTexturePath = "\\ressources\\shrek.png";
+	std::string woodenBoxTexturePath = "\\ressources\\woodenBox.png";
+	std::string woodenBoxFrameTexturePath = "\\ressources\\woodenBoxFrame.png";
 
 	void checkCompileErrors(unsigned int shader, std::string type)
 	{
