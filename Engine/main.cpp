@@ -16,6 +16,7 @@
 #define LOG(msg) std::cout << msg << std::endl
 #define vec3LOG(vec3) std::cout << vec3.x << "|" << vec3.y << "|" << vec3.z << std::endl
 
+#define GetCurrentPath(buff, filenameSize) _getcwd( buff, filenameSize);
 
 void error_callback(int error, const char* description);
 bool timer(double duration, const char* modus);
@@ -71,7 +72,7 @@ int main(void)
 	glfwSetKeyCallback(window, key_callback);
 
 	char buff[FILENAME_MAX];
-	_getcwd(buff, FILENAME_MAX);
+	GetCurrentPath(buff, FILENAME_MAX);
 
 	std::string currentPath = buff;
 
@@ -125,7 +126,17 @@ int main(void)
 
 	glm::vec3 cubePositions[] = {
 		glm::vec3(0.0f,  0.0f, 0.0f),
-		glm::vec3(1.0f,  2.0f, 3.0f)
+
+
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(1.0f,  2.0f, 3.0f),
+		glm::vec3(2.0f,  4.0f, 3.0f)
 	};
 
 	//bind buffer
@@ -159,6 +170,7 @@ int main(void)
 
 	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 lightDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
 
 	unsigned int diffuseMap = cubeProgram.loadTexture(WOODENBOX);
 	unsigned int specularMap = cubeProgram.loadTexture(WOODENBOXFRAME);
@@ -203,16 +215,30 @@ int main(void)
 		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
 
-		cubeProgram.setVec3("light.lightPos", glm::vec3(cubePositions[1].x, cubePositions[1].y, cubePositions[1].z));
+		cubeProgram.setVec3("light.position", glm::vec3(cubePositions[0].x, cubePositions[0].y, cubePositions[0].z));
+
 		cubeProgram.setVec3("light.ambient", ambientColor);
 		cubeProgram.setVec3("light.diffuse", diffuseColor);
 		cubeProgram.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
-		//PERSPECTIVES
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, cubePositions[0]);
+		cubeProgram.setFloat("light.constant", 1.0f);
+		cubeProgram.setFloat("light.linear", 0.09f);
+		cubeProgram.setFloat("light.quadratic", 0.032f);
 
-		cubeProgram.setMatrix4("model", model);
+
+		//PERSPECTIVES
+		for (unsigned int i = 1; i < 10; i++)
+		{
+			glm::mat4 model = model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 0.0f;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			cubeProgram.setMatrix4("model", model);
+
+			glBindVertexArray(cubeVAO);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
 		cubeProgram.setMatrix4("view", cam.getView());
 		cubeProgram.setMatrix4("projection", cam.getProjection());
 
@@ -224,16 +250,15 @@ int main(void)
 		glBindTexture(GL_TEXTURE_2D, specularMap);
 
 
-		glBindVertexArray(cubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+
 
 		//LIGHTCUBE
 		lightProgram.use();
 
 		lightProgram.setVec3("lightColor", lightColor);
 
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, cubePositions[1]);
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, cubePositions[0]);
 
 		lightProgram.setMatrix4("model", model);
 		lightProgram.setMatrix4("view", cam.getView());
