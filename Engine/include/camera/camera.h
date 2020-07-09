@@ -26,13 +26,13 @@ enum camDirections {
 
 enum cameraZoom {
 	ZOOM_IN = 20,
-	ZOOM_OUT = 110
+	ZOOM_OUT = 90
 };
 
 class Camera
 {
 public:
-	Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 target = glm::vec3(0.0f, 1.0f, 0.0f), int fov = 110)
+	Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 target = glm::vec3(0.0f, 1.0f, 0.0f), int fov = 90)
 	{
 		camPos = position;
 		camTarget = target;

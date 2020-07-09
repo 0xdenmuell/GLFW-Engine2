@@ -36,6 +36,9 @@ float lastFrame = 0.0f;
 bool debug;
 MaterialType material;
 
+float cutOff = 12.5;
+float outerCutOff = 17.5;
+
 int main(void)
 {
 	glfwSetErrorCallback(error_callback);
@@ -46,9 +49,6 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	//Enable VSync
-	//glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
 
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL Window", NULL, NULL);
 	if (!window)
@@ -215,7 +215,8 @@ int main(void)
 		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
 
-		cubeProgram.setVec3("light.position", glm::vec3(cubePositions[0].x, cubePositions[0].y, cubePositions[0].z));
+		cubeProgram.setVec3("light.position", cam.getCamPos());
+		cubeProgram.setVec3("light.direction", cam.getCamTarget());
 
 		cubeProgram.setVec3("light.ambient", ambientColor);
 		cubeProgram.setVec3("light.diffuse", diffuseColor);
@@ -224,6 +225,10 @@ int main(void)
 		cubeProgram.setFloat("light.constant", 1.0f);
 		cubeProgram.setFloat("light.linear", 0.09f);
 		cubeProgram.setFloat("light.quadratic", 0.032f);
+
+		cubeProgram.setFloat("light.cutOff", glm::cos(glm::radians(cutOff)));
+		cubeProgram.setFloat("light.outerCutOff", glm::cos(glm::radians(outerCutOff)));
+
 
 
 		//PERSPECTIVES
@@ -378,12 +383,21 @@ void processInput(GLFWwindow* window)
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
-		material = MaterialType(material + 1);
-		LOG(material);
+		cutOff += 1;
+		LOG("cutOff: " << cutOff);
 	}
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
-		material = MaterialType(material - 1);
-		LOG(material);
+		cutOff -= 1;
+		LOG("cutOff: " << cutOff);
+	}
+
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+		outerCutOff += 1;
+		LOG("outerCutOff: " << outerCutOff);
+	}
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+		outerCutOff -= 1;
+		LOG("outerCutOff: " << outerCutOff);
 	}
 }
 
