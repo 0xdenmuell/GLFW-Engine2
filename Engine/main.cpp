@@ -227,9 +227,9 @@ int main(void)
 		cubeProgram.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
 		//LOAD DIFFRENT LIGHT SOURCE
-	
+
 		cubeProgram.loadDirLight();
-		
+
 		for (int i = 0; i < 4; i++)
 		{
 			cubeProgram.loadPointLight(pointLightPositions[i], i);

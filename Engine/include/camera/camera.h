@@ -32,7 +32,7 @@ enum cameraZoom {
 class Camera
 {
 public:
-	Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 target = glm::vec3(0.0f, 1.0f, 0.0f), int fov = 90)
+	Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 target = glm::vec3(0.0f, 1.0f, 0.0f), float fov = 90.0f)
 	{
 		camPos = position;
 		camTarget = target;
@@ -99,7 +99,7 @@ public:
 		camUp = glm::cross(camDistance, camRight);
 		camSpeedFixed = camSpeed * deltaTime;
 
-		if (!(currentFOV == newFOV))
+		if (!(newFOV == (int)currentFOV))
 		{
 			if (currentFOV > newFOV)
 			{
@@ -109,11 +109,13 @@ public:
 			{
 				currentFOV += (100 * deltaTime);
 			}
-			currentFOV == newFOV;
+		}
+		else {
+			currentFOV = newFOV;
 		}
 
 		view = glm::lookAt(camPos, camTarget + camPos, upVector);
-		projection = glm::perspective(glm::radians((float)currentFOV), SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(currentFOV), SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
 	}
 
 private:
@@ -129,7 +131,7 @@ private:
 	glm::mat4 view;
 	glm::mat4 projection;
 
-	int currentFOV;
+	float currentFOV;
 	float newFOV;
 
 	float camSpeedFixed;
