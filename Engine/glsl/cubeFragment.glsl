@@ -68,14 +68,21 @@ void main()
 {
     vec3 result = vec3(0.0);
     vec3 normUnit = normalize(Unit);
-    
-    result += CalcDirLight(dirLight, normUnit);
+   
+    if (dirLight.direction == vec3(-0.2f, -1.0f, -0.3f)) {
+        result += CalcDirLight(dirLight, normUnit);
+    }
    
     for (int i = 0; i < INDEX_POINT_LIGHT; i++) {
-        result += CalcPointLight(pointLight[i], normUnit);
-	}
+        if (pointLight[i].constant == 1.0) {
+            result += CalcPointLight(pointLight[i], normUnit);
+	    }
+    }
     
-    result += CalcSpotLight(spotLight, normUnit); 
+    if (spotLight.constant == 1.0) {
+        result += CalcSpotLight(spotLight, normUnit); 
+    }
+    
  
     FragColor = vec4(result, 1.0);
 }

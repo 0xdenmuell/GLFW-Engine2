@@ -183,8 +183,8 @@ int main(void)
 	unsigned int specularMap = cubeProgram.loadTexture(WOODENBOXFRAME);
 
 	cubeProgram.use();
-	cubeProgram.setInt("material.diffuse", 0);
-	cubeProgram.setInt("material.specular", 1);
+	cubeProgram.setInt("material.diffuseTexture", 0);
+	cubeProgram.setInt("material.specularTexture", 1);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -227,16 +227,16 @@ int main(void)
 		cubeProgram.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
 		//LOAD DIFFRENT LIGHT SOURCE
-
-		cubeProgram.loadDirLight();
-
+		
+		//cubeProgram.loadDirLight();
+		
 		for (int i = 0; i < 4; i++)
 		{
 			cubeProgram.loadPointLight(pointLightPositions[i], i);
 		}
-
+		
 		cubeProgram.loadSpotLight(cam.getCamPos(), cam.getCamTarget());
-
+		
 
 
 
