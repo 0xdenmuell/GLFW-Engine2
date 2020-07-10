@@ -160,6 +160,7 @@ public:
 			break;
 		}
 	}
+
 	unsigned int loadTexture(Textures texture) {
 
 		std::string texturePath;
@@ -213,6 +214,65 @@ public:
 			stbi_image_free(textureData);
 		}
 		return textureID;
+	}
+
+	void loadDirLight(glm::vec3 direction = glm::vec3(-0.2f, -1.0f, -0.3f)) {
+
+		setVec3("dirLight.direction", direction);
+	}
+	void loadPointLight(glm::vec3 position, int index) {
+
+		switch (index)
+		{
+		case 0:
+			setVec3("pointLight[0].position", position);
+			setFloat("pointLight[0].constant", 1.0f);
+			setFloat("pointLight[0].linear", 0.09f);
+			setFloat("pointLight[0].quadratic", 0.032f);
+			break;
+		case 1:
+			setVec3("pointLight[1].position", position);
+			setFloat("pointLight[1].constant", 1.0f);
+			setFloat("pointLight[1].linear", 0.09f);
+			setFloat("pointLight[1].quadratic", 0.032f);
+			break;
+		case 2:
+			setVec3("pointLight[2].position", position);
+			setFloat("pointLight[2].constant", 1.0f);
+			setFloat("pointLight[2].linear", 0.09f);
+			setFloat("pointLight[2].quadratic", 0.032f);
+			break;
+		case 3:
+			setVec3("pointLight[3].position", position);
+			setFloat("pointLight[3].constant", 1.0f);
+			setFloat("pointLight[3].linear", 0.09f);
+			setFloat("pointLight[3].quadratic", 0.032f);
+			break;
+		case 4:
+			setVec3("pointLight[4].position", position);
+			setFloat("pointLight[4].constant", 1.0f);
+			setFloat("pointLight[4].linear", 0.09f);
+			setFloat("pointLight[4].quadratic", 0.032f);
+			break;
+		default:
+			LOG("UNIFORM NAME IS DEFAULT");
+			break;
+		}
+	}
+	void loadSpotLight(glm::vec3 position, glm::vec3 direction) {
+		setVec3("spotLight.position", position);
+		setVec3("spotLight.direction", direction);
+
+		setVec3("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+		setVec3("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+		setVec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+		setFloat("spotLight.constant", 1.0f);
+		setFloat("spotLight.linear", 0.09f);
+		setFloat("spotLight.quadratic", 0.032f);
+
+		setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		setFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
 	}
 
 private:

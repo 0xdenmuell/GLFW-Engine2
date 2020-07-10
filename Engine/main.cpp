@@ -139,6 +139,13 @@ int main(void)
 		glm::vec3(2.0f,  4.0f, 3.0f)
 	};
 
+	glm::vec3 pointLightPositions[] = {
+	glm::vec3(0.7f,  0.2f,  2.0f),
+	glm::vec3(2.3f, -3.3f, -4.0f),
+	glm::vec3(-4.0f,  2.0f, -12.0f),
+	glm::vec3(0.0f,  0.0f, -3.0f)
+	};
+
 	//bind buffer
 	unsigned int VBO, cubeVAO;
 	glGenVertexArrays(1, &cubeVAO);
@@ -215,19 +222,25 @@ int main(void)
 		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
 
-		cubeProgram.setVec3("light.position", cam.getCamPos());
-		cubeProgram.setVec3("light.direction", cam.getCamTarget());
-
 		cubeProgram.setVec3("light.ambient", ambientColor);
 		cubeProgram.setVec3("light.diffuse", diffuseColor);
 		cubeProgram.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
-		cubeProgram.setFloat("light.constant", 1.0f);
-		cubeProgram.setFloat("light.linear", 0.09f);
-		cubeProgram.setFloat("light.quadratic", 0.032f);
+		//LOAD DIFFRENT LIGHT SOURCE
+	
+		cubeProgram.loadDirLight();
+		
+		for (int i = 0; i < 4; i++)
+		{
+			cubeProgram.loadPointLight(pointLightPositions[i], i);
+		}
 
-		cubeProgram.setFloat("light.cutOff", glm::cos(glm::radians(cutOff)));
-		cubeProgram.setFloat("light.outerCutOff", glm::cos(glm::radians(outerCutOff)));
+		cubeProgram.loadSpotLight(cam.getCamPos(), cam.getCamTarget());
+
+
+
+
+
 
 
 
@@ -262,15 +275,22 @@ int main(void)
 
 		lightProgram.setVec3("lightColor", lightColor);
 
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, cubePositions[0]);
 
-		lightProgram.setMatrix4("model", model);
+		for (unsigned int i = 1; i < 4; i++)
+		{
+			glm::mat4 model = model = glm::mat4(1.0f);
+			model = glm::translate(model, pointLightPositions[i]);
+			float angle = 0.0f;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			lightProgram.setMatrix4("model", model);
+
+			glBindVertexArray(lightCubeVAO);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
 		lightProgram.setMatrix4("view", cam.getView());
 		lightProgram.setMatrix4("projection", cam.getProjection());
 
-		glBindVertexArray(lightCubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
