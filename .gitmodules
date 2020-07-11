@@ -7,3 +7,7 @@
 [submodule "Engine/submodules/glfw"]
 	path = Engine/submodules/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "Engine/submodules/assimp"]
+	path = Engine/submodules/assimp
+	url = https://github.com/assimp/assimp.git
+
