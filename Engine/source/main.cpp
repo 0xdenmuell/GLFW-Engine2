@@ -1,3 +1,5 @@
+#include <precom.h>
+
 #include <glad/glad.h>
 #include <glfw/include/GLFW/glfw3.h>
 
@@ -8,13 +10,6 @@
 
 #include <camera/camera.h>
 #include <shader/shader.h>
-
-#include <iostream>
-#include <vector>
-#include <direct.h>
-
-#define LOG(msg) std::cout << msg << std::endl
-#define vec3LOG(vec3) std::cout << vec3.x << "|" << vec3.y << "|" << vec3.z << std::endl
 
 #define GetCurrentPath(buff, filenameSize) _getcwd( buff, filenameSize);
 

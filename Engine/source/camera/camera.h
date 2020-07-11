@@ -8,6 +8,7 @@
 
 #include <iostream>
 
+
 extern float SCR_WIDTH;
 extern float SCR_HEIGHT;
 extern float deltaTime;

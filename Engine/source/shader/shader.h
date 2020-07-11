@@ -7,27 +7,20 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <utilityFunc.h>
-
 enum MaterialType
 {
 	emerald, jade, obsidian, pearl, ruby, turquoise, brass, bronze, chrome, copper,
 	gold, silver, blackPlastic, cyanPlastic, greenPlastic, redPlastic, whitePlastic,
 	yellowPlastic, blackRubber, cyanRubber, greenRubber, redRubber, whiteRubber, yellowRubber
 };
-
 enum Objects
 {
 	CUBE, LIGHT
 };
-
 enum Textures {
 	COLORFUL, SHREK, WOODENBOX, WOODENBOXFRAME
 };
+
 
 class Shader
 {

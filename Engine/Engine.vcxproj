@@ -79,7 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(ProjectDir)\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)\include;$(ProjectDir)\submodules;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\source;$(ProjectDir)\submodules;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -97,12 +97,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\submodules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>
-      </PrecompiledHeaderOutputFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)\source;$(ProjectDir)\submodules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -117,13 +112,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>
-      </PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\submodules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\source;$(ProjectDir)\submodules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -165,18 +157,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\utilityFunc.h" />
+    <ClInclude Include="source\precom.h" />
+    <ClInclude Include="source\shader\shader.h" />
+    <ClInclude Include="source\camera\camera.h" />
+    <ClInclude Include="source\utilityFunc.h" />
+    <ClCompile Include="source\precom.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">precom.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="source\main.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">precom.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="submodules\glad\glad.c" />
-    <ClCompile Include="main.cpp" />
-    <ClInclude Include="include\camera\camera.h" />
     <ClInclude Include="submodules\glad\glad.h" />
-    <ClInclude Include="include\GLFW\glfw3.h" />
-    <ClInclude Include="include\shader\shader.h" />
+    <ClInclude Include="submodules\glfw\include\GLFW\glfw3.h" />
+    <ClInclude Include="submodules\glm\glm\glm.hpp" />
+    <ClInclude Include="submodules\glm\glm\gtc\matrix_transform.hpp" />
+    <ClInclude Include="submodules\glm\glm\gtc\type_ptr.hpp" />
+    <ClInclude Include="submodules\glm\glm\gtx\string_cast.hpp" />
     <ClInclude Include="submodules\KHR\khrplatform.h" />
     <ClInclude Include="submodules\stb\stb_image.h" />
-    <ClInclude Include="include\std_image.h" />
+    <ClInclude Include="submodules\std_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <Library Include="lib\assimp-vc142-mtd.lib" />
     <Library Include="lib\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
@@ -187,9 +192,6 @@
     <None Include="glsl\cubeVertices.glsl" />
     <None Include="glsl\lightFragment.glsl" />
     <None Include="glsl\lightVertices.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="ressources\colorful.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
