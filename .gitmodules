@@ -10,4 +10,3 @@
 [submodule "Engine/submodules/assimp"]
 	path = Engine/submodules/assimp
 	url = https://github.com/assimp/assimp.git
-
