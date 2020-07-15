@@ -10,20 +10,15 @@
 
 #include <camera/camera.h>
 #include <shader/shader.h>
+#include <window/window.h>
 
-#define GetCurrentPath(buff, filenameSize) _getcwd( buff, filenameSize);
-
-void error_callback(int error, const char* description);
 bool timer(double duration, const char* modus);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void window_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-float SCR_WIDTH = 1920;
-float SCR_HEIGHT = 1080;
-
-Camera cam(glm::vec3(0.0f, 1.0f, 0.0f));
+Camera cam;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -36,43 +31,24 @@ float outerCutOff = 17.5;
 
 int main(void)
 {
-	glfwSetErrorCallback(error_callback);
+	//Creates a Window with all properties
+	Window window;
 
-	if (!glfwInit())
-		return -1;
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL Window", NULL, NULL);
-	if (!window)
+	if (!window.m_fail)
 	{
-		LOG("Failed to initialize GLFW");
-		glfwTerminate();
-		return -1;
+		LOG("Created Game Window!");
 	}
-	glfwMakeContextCurrent(window);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		LOG("Failed to initialize GLAD");
-		return -1;
+	else {
+		LOG("Failed to Create Game Window!");
+		return false;
 	}
 
-	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+	Shader cubeProgram(CUBE);
+	Shader lightProgram(LIGHT);
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetKeyCallback(window, key_callback);
-
-	char buff[FILENAME_MAX];
-	GetCurrentPath(buff, FILENAME_MAX);
-
-	std::string currentPath = buff;
-
-	Shader cubeProgram(currentPath, CUBE);
-	Shader lightProgram(currentPath, LIGHT);
+	glfwSetInputMode(window.m_GLFWwindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window.m_GLFWwindow, mouse_callback);
+	glfwSetKeyCallback(window.m_GLFWwindow, key_callback);
 
 	float vertices[] = {
 		// positions          // normals           // texture coords
@@ -183,22 +159,18 @@ int main(void)
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	glfwSetFramebufferSizeCallback(window, window_size_callback);
-	glfwSetWindowSizeCallback(window, window_size_callback);
-
 	glEnable(GL_DEPTH_TEST);
 
 	float currentFrame;
 
 
-
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(window.m_GLFWwindow))
 	{
 		currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		processInput(window);
+		processInput(window.m_GLFWwindow);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -208,7 +180,7 @@ int main(void)
 
 		//COLOR
 		cubeProgram.setVec3("objectColor", objectColor);
-		cubeProgram.setVec3("viewPos", cam.getCamPos());
+		cubeProgram.setVec3("viewPos", cam.m_position);
 
 		//MATERIAL & TEXTURE 
 		cubeProgram.setMaterial(material);
@@ -222,20 +194,15 @@ int main(void)
 		cubeProgram.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
 		//LOAD DIFFRENT LIGHT SOURCE
-		
+
 		//cubeProgram.loadDirLight();
-		
+
 		for (int i = 0; i < 4; i++)
 		{
 			cubeProgram.loadPointLight(pointLightPositions[i], i);
 		}
-		
-		cubeProgram.loadSpotLight(cam.getCamPos(), cam.getCamTarget());
-		
 
-
-
-
+		cubeProgram.loadSpotLight(cam.m_position, cam.m_target);
 
 
 
@@ -254,6 +221,8 @@ int main(void)
 
 		cubeProgram.setMatrix4("view", cam.getView());
 		cubeProgram.setMatrix4("projection", cam.getProjection());
+
+		cam.UpdateValues();
 
 		//ASSIGN TEXTURE TO BUFFER
 		glActiveTexture(GL_TEXTURE0);
@@ -287,7 +256,7 @@ int main(void)
 		lightProgram.setMatrix4("projection", cam.getProjection());
 
 
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(window.m_GLFWwindow);
 		glfwPollEvents();
 		// Keep running
 	}
@@ -296,7 +265,7 @@ int main(void)
 	glDeleteVertexArrays(1, &lightCubeVAO);
 	glDeleteBuffers(1, &VBO);
 
-	glfwDestroyWindow(window);
+	glfwDestroyWindow(window.m_GLFWwindow);
 	glfwTerminate();
 
 	return 0;
@@ -351,38 +320,38 @@ void processInput(GLFWwindow* window)
 
 	//MOVEMENT
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		cam.moveCam(FORWARD);
+		cam.setMovementPosition(FORWARD);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		cam.moveCam(BACKWARDS);
+		cam.setMovementPosition(BACKWARDS);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		cam.moveCam(LEFT);
+		cam.setMovementPosition(LEFT);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		cam.moveCam(RIGHT);
+		cam.setMovementPosition(RIGHT);
 	}
 
 	//SPRINT
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		cam.setSpeed(10.0f);
+		cam.m_speed = HIGH;
 	}
 	else {
-		cam.setSpeed(2.5f);
+		cam.m_speed = LOW;
 	}
 
 	//ZOOM
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
 		//Zoom In
-		cam.setFOV(ZOOM_IN);
+		cam.m_fov = ZOOM_IN;
 	}
 
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
 		//Zoom Out
-		cam.setFOV(ZOOM_OUT);
+		cam.m_fov = ZOOM_OUT;
 	}
 
 	//DEBUG
@@ -417,41 +386,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-float lastX = 400;
-float lastY = 300;
-float yaw = 90.0f;
-float pitch = 0;
-
 void mouse_callback(GLFWwindow* window, double posX, double posY) {
-
-	float offsetX = posX - lastX;
-	float offsetY = lastY - posY;
-	lastX = posX;
-	lastY = posY;
-
-	const float sensitivity = 0.1f;
-	offsetX *= sensitivity;
-	offsetY *= sensitivity;
-
-	yaw += offsetX;
-	pitch += offsetY;
-
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-
-	glm::vec3 direction;
-
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cam.setCamTarget(glm::normalize(direction));
+	cam.setMovementTarget(posX, posY);
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {
-	SCR_HEIGHT = height;
-	SCR_WIDTH = width;
-	LOG("Höhe: " << SCR_HEIGHT); LOG("Breite: " << SCR_WIDTH);
-	glViewport(0, 0, SCR_HEIGHT, SCR_WIDTH);
+	g_SCR_HEIGHT = height;
+	g_SCR_WIDTH = width;
+	LOG("Höhe: " << g_SCR_HEIGHT); LOG("Breite: " << g_SCR_WIDTH);
+	glViewport(0, 0, g_SCR_HEIGHT, g_SCR_WIDTH);
 }

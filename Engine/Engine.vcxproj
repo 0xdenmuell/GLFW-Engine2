@@ -170,6 +170,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">precom.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="submodules\glad\glad.c" />
+    <ClInclude Include="source\window\window.h" />
     <ClInclude Include="submodules\glad\glad.h" />
     <ClInclude Include="submodules\glfw\include\GLFW\glfw3.h" />
     <ClInclude Include="submodules\glm\glm\glm.hpp" />
@@ -188,10 +189,10 @@
     <None Include="Debug\Engine.tlog\CL.command.1.tlog" />
     <None Include="Debug\Engine.tlog\Engine.lastbuildstate" />
     <None Include="Debug\Engine.tlog\unsuccessfulbuild" />
-    <None Include="glsl\cubeFragment.glsl" />
-    <None Include="glsl\cubeVertices.glsl" />
-    <None Include="glsl\lightFragment.glsl" />
-    <None Include="glsl\lightVertices.glsl" />
+    <None Include="source\shader\glsl\cubeFragment.glsl" />
+    <None Include="source\shader\glsl\cubeVertices.glsl" />
+    <None Include="source\shader\glsl\lightFragment.glsl" />
+    <None Include="source\shader\glsl\lightVertices.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

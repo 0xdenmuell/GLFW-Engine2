@@ -25,21 +25,24 @@ enum Textures {
 class Shader
 {
 public:
-	Shader(std::string path, Objects object)
+	Shader(Objects object)
 	{
-		currentPath = path;
+		currentPath = getCurrentPath();
+
+		currentPath += "\\source\\shader";
+
 		std::string vertexPath;
 		std::string	fragmentPath;
 
 		switch (object)
 		{
 		case CUBE:
-			vertexPath = path + cubeVerticesPath;
-			fragmentPath = path + cubeFragmentPath;
+			vertexPath = currentPath + cubeVerticesPath;
+			fragmentPath = currentPath + cubeFragmentPath;
 			break;
 		case LIGHT:
-			vertexPath = path + lightVerticesPath;
-			fragmentPath = path + lightFragmentPath;
+			vertexPath = currentPath + lightVerticesPath;
+			fragmentPath = currentPath + lightFragmentPath;
 			break;
 		default:
 			LOG("NO OBJECT SELECTED (DEFAULT CASE");
@@ -272,6 +275,14 @@ private:
 	unsigned int ID;
 
 	std::string currentPath;
+
+	std::string getCurrentPath() {
+		char pathChar[FILENAME_MAX];
+		_getcwd(pathChar, FILENAME_MAX);
+
+		std::string pathString = pathChar;
+		return pathString;
+	}
 
 	std::string cubeVerticesPath = "\\glsl\\cubeVertices.glsl";
 	std::string cubeFragmentPath = "\\glsl\\cubeFragment.glsl";
