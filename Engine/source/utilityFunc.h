@@ -12,4 +12,17 @@ public:
 		strcpy_s(buffer, stringLength, stringValue.c_str());
 		return buffer;
 	}
+	
+	static const char* StringToConstChar(std::string stringValue) {
+
+		unsigned int stringLength = stringValue.length() + 1;
+		char* buffer = new char[stringLength];
+
+		strcpy_s(buffer, stringLength, stringValue.c_str());
+		return buffer;
+	}
+
+
+
+
 };

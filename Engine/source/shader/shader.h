@@ -7,15 +7,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-enum MaterialType
-{
-	emerald, jade, obsidian, pearl, ruby, turquoise, brass, bronze, chrome, copper,
-	gold, silver, blackPlastic, cyanPlastic, greenPlastic, redPlastic, whitePlastic,
-	yellowPlastic, blackRubber, cyanRubber, greenRubber, redRubber, whiteRubber, yellowRubber
-};
 enum Objects
 {
-	CUBE, LIGHT
+	OBJECT, LIGHT, MODEL
 };
 enum Textures {
 	COLORFUL, SHREK, WOODENBOX, WOODENBOXFRAME
@@ -36,13 +30,17 @@ public:
 
 		switch (object)
 		{
-		case CUBE:
+		case OBJECT:
 			vertexPath = currentPath + cubeVerticesPath;
 			fragmentPath = currentPath + cubeFragmentPath;
 			break;
 		case LIGHT:
 			vertexPath = currentPath + lightVerticesPath;
 			fragmentPath = currentPath + lightFragmentPath;
+			break;
+		case MODEL:
+			vertexPath = currentPath + modelVerticesPath;
+			fragmentPath = currentPath + modelFragmentPath;
 			break;
 		default:
 			LOG("NO OBJECT SELECTED (DEFAULT CASE");
@@ -133,56 +131,17 @@ public:
 	{
 		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 	}
-	void setMaterial(MaterialType material) {
-		switch (material)
-		{
-		case emerald:
-			setVec3("material.specular", glm::vec3(0.633f, 0.727811f, 0.633f));
-			setFloat("material.shininess", 76.8f);
-			break;
 
-		case jade:
-			setVec3("material.specular", glm::vec3(0.316228f, 0.316228f, 0.316228f));
-			setFloat("material.shininess", 12.8f);
-			break;
 
-		case obsidian:
-			setVec3("material.specular", glm::vec3(0.332741f, 0.328634f, 0.346435f));
-			setFloat("material.shininess", 38.4f);
-			break;
+	static unsigned int loadMaterialTexture(std::string texturePath) {
 
-		default:
-			LOG("setMATERIAL DEFAULT CASE");
-			break;
-		}
-	}
-
-	unsigned int loadTexture(Textures texture) {
-
-		std::string texturePath;
-
-		switch (texture)
-		{
-		case COLORFUL:
-			texturePath = currentPath + colorfulTexturePath;
-			break;
-		case SHREK:
-			texturePath = currentPath + shrekTexturePath;
-			break;
-		case WOODENBOX:
-			texturePath = currentPath + woodenBoxTexturePath;
-			break;
-		case WOODENBOXFRAME:
-			texturePath = currentPath + woodenBoxFrameTexturePath;
-			break;
-		default:
-			break;
-		}
 		unsigned int textureID;
 		glGenTextures(1, &textureID);
-
+		LOG(textureID << " ------- " << texturePath);
 		int width, height, channels;
+		stbi_set_flip_vertically_on_load(true);
 		unsigned char* textureData = stbi_load(UtilityFunc::StringToChar(texturePath), &width, &height, &channels, 0);
+		
 		if (textureData)
 		{
 			GLenum format;
@@ -196,11 +155,13 @@ public:
 			glBindTexture(GL_TEXTURE_2D, textureID);
 			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, textureData);
 			glGenerateMipmap(GL_TEXTURE_2D);
-
+			
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			
+
 
 			stbi_image_free(textureData);
 		}
@@ -211,6 +172,9 @@ public:
 		}
 		return textureID;
 	}
+
+
+
 
 	void loadDirLight(glm::vec3 direction = glm::vec3(-0.2f, -1.0f, -0.3f)) {
 
@@ -288,6 +252,8 @@ private:
 	std::string cubeFragmentPath = "\\glsl\\cubeFragment.glsl";
 	std::string lightVerticesPath = "\\glsl\\lightVertices.glsl";
 	std::string lightFragmentPath = "\\glsl\\lightFragment.glsl";
+	std::string modelVerticesPath = "\\glsl\\modelVertices.glsl";
+	std::string modelFragmentPath = "\\glsl\\modelFragment.glsl";
 
 	std::string colorfulTexturePath = "\\ressources\\colorful.jpg";
 	std::string shrekTexturePath = "\\ressources\\shrek.png";

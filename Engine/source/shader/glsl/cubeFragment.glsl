@@ -12,11 +12,9 @@ struct Light{
     vec3 diffuse;
     vec3 specular;
 };
-
 struct DirLight {
     vec3 direction;
 };
-
 struct PointLight {
     vec3 position;
   
@@ -24,7 +22,6 @@ struct PointLight {
     float linear;
     float quadratic;    
 };
-
 struct SpotLight {
     vec3 position;
     vec3 direction;

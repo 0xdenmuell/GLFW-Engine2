@@ -10,7 +10,9 @@
 
 #include <camera/camera.h>
 #include <shader/shader.h>
+#include <shader/model.h>
 #include <window/window.h>
+
 
 bool timer(double duration, const char* modus);
 void processInput(GLFWwindow* window);
@@ -24,7 +26,6 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 bool debug;
-MaterialType material;
 
 float cutOff = 12.5;
 float outerCutOff = 17.5;
@@ -43,119 +44,14 @@ int main(void)
 		return false;
 	}
 
-	Shader cubeProgram(CUBE);
-	Shader lightProgram(LIGHT);
+
 
 	glfwSetInputMode(window.m_GLFWwindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window.m_GLFWwindow, mouse_callback);
 	glfwSetKeyCallback(window.m_GLFWwindow, key_callback);
 
-	float vertices[] = {
-		// positions          // normals           // texture coords
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
-	};
-
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f, 0.0f),
-
-
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(1.0f,  2.0f, 3.0f),
-		glm::vec3(2.0f,  4.0f, 3.0f)
-	};
-
-	glm::vec3 pointLightPositions[] = {
-	glm::vec3(0.7f,  0.2f,  2.0f),
-	glm::vec3(2.3f, -3.3f, -4.0f),
-	glm::vec3(-4.0f,  2.0f, -12.0f),
-	glm::vec3(0.0f,  0.0f, -3.0f)
-	};
-
-	//bind buffer
-	unsigned int VBO, cubeVAO;
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &VBO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindVertexArray(cubeVAO);
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// unit attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	unsigned int lightCubeVAO;
-	glGenVertexArrays(1, &lightCubeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBindVertexArray(lightCubeVAO);
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
-	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 lightDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
-
-	unsigned int diffuseMap = cubeProgram.loadTexture(WOODENBOX);
-	unsigned int specularMap = cubeProgram.loadTexture(WOODENBOXFRAME);
-
-	cubeProgram.use();
-	cubeProgram.setInt("material.diffuseTexture", 0);
-	cubeProgram.setInt("material.specularTexture", 1);
+	Shader cubeProgram(MODEL);
+	Model object(BACKPACK);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -172,98 +68,33 @@ int main(void)
 
 		processInput(window.m_GLFWwindow);
 
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//CUBE
 		cubeProgram.use();
-
-		//COLOR
-		cubeProgram.setVec3("objectColor", objectColor);
-		cubeProgram.setVec3("viewPos", cam.m_position);
-
-		//MATERIAL & TEXTURE 
-		cubeProgram.setMaterial(material);
-
-		//LIGHT STRENGTH OF CUBE
-		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
-
-		cubeProgram.setVec3("light.ambient", ambientColor);
-		cubeProgram.setVec3("light.diffuse", diffuseColor);
-		cubeProgram.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
 		//LOAD DIFFRENT LIGHT SOURCE
 
 		//cubeProgram.loadDirLight();
 
-		for (int i = 0; i < 4; i++)
-		{
-			cubeProgram.loadPointLight(pointLightPositions[i], i);
-		}
-
-		cubeProgram.loadSpotLight(cam.m_position, cam.m_target);
-
-
-
 		//PERSPECTIVES
-		for (unsigned int i = 1; i < 10; i++)
-		{
-			glm::mat4 model = model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 0.0f;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			cubeProgram.setMatrix4("model", model);
 
-			glBindVertexArray(cubeVAO);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		cam.UpdateValues();
+
+		glm::mat4 model = model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+		cubeProgram.setMatrix4("model", model);
 
 		cubeProgram.setMatrix4("view", cam.getView());
 		cubeProgram.setMatrix4("projection", cam.getProjection());
 
-		cam.UpdateValues();
-
-		//ASSIGN TEXTURE TO BUFFER
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffuseMap);
-
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, specularMap);
-
-
-
-
-		//LIGHTCUBE
-		lightProgram.use();
-
-		lightProgram.setVec3("lightColor", lightColor);
-
-
-		for (unsigned int i = 1; i < 4; i++)
-		{
-			glm::mat4 model = model = glm::mat4(1.0f);
-			model = glm::translate(model, pointLightPositions[i]);
-			float angle = 0.0f;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			lightProgram.setMatrix4("model", model);
-
-			glBindVertexArray(lightCubeVAO);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-
-		lightProgram.setMatrix4("view", cam.getView());
-		lightProgram.setMatrix4("projection", cam.getProjection());
-
+		object.Draw(cubeProgram);
 
 		glfwSwapBuffers(window.m_GLFWwindow);
 		glfwPollEvents();
 		// Keep running
 	}
-
-	glDeleteVertexArrays(1, &cubeVAO);
-	glDeleteVertexArrays(1, &lightCubeVAO);
-	glDeleteBuffers(1, &VBO);
 
 	glfwDestroyWindow(window.m_GLFWwindow);
 	glfwTerminate();
@@ -356,11 +187,11 @@ void processInput(GLFWwindow* window)
 
 	//DEBUG
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 }
 
@@ -384,7 +215,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		LOG("outerCutOff: " << outerCutOff);
 	}
 }
-
 
 void mouse_callback(GLFWwindow* window, double posX, double posY) {
 	cam.setMovementTarget(posX, posY);
