@@ -86,9 +86,6 @@ void main()
 
 
 
-
-
-
     vec3 CalcDirLight(DirLight dirLight, vec3 normUnit) {
     
         vec3 lightDir = normalize(-dirLight.direction);

@@ -10,6 +10,8 @@
 #include <precom.h>
 
 
+extern Camera cam;
+
 struct Vertex {
 	glm::vec3 Position;
 	glm::vec3 Normal;
@@ -39,6 +41,16 @@ public:
 	}
 
 	void Draw(Shader& shader) {
+
+		shader.setVec3("viewPos", cam.m_position);
+
+		shader.loadNormalLight();
+
+		for (int i = 0; i < 1; i++)
+		{
+			shader.loadPointLight(cam.m_position, i);
+		}
+
 		unsigned int diffuseNr = 1;
 		unsigned int specularNr = 1;
 
@@ -55,7 +67,7 @@ public:
 			else if (name == "texture_specular") {
 				number = specularNr++;
 			}
-			shader.setInt(name + std::to_string(number), i);
+			shader.setInt("material." + name + std::to_string(number), i);
 			glBindTexture(GL_TEXTURE_2D, m_textures[i].id); 
 		}
 		// draw mesh

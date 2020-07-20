@@ -9,7 +9,7 @@
 #include <precom.h>
 
 enum Models {
-	BACKPACK = 0,
+	BACKPACK = 0, TEST
 };
 
 class Model
@@ -22,6 +22,9 @@ public:
 		{
 		case BACKPACK:
 			path = "D:/dev/0xdenmuell/GLFW-Engine2/Engine/source/shader/ressources/Backpack/backpack.obj";
+			break;
+		case TEST:
+			path = "D:/dev/0xdenmuell/GLFW-Engine2/Engine/source/shader/ressources/Backpack/test.obj";
 			break;
 		default:
 			LOG("CANT FIND MODEL");

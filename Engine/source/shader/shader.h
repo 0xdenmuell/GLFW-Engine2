@@ -132,7 +132,6 @@ public:
 		glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 	}
 
-
 	static unsigned int loadMaterialTexture(std::string texturePath) {
 
 		unsigned int textureID;
@@ -174,8 +173,16 @@ public:
 	}
 
 
+	void loadNormalLight() {
+		glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
+		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
 
+		setVec3("light.ambient", ambientColor);
+		setVec3("light.diffuse", diffuseColor);
+		setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	}
 	void loadDirLight(glm::vec3 direction = glm::vec3(-0.2f, -1.0f, -0.3f)) {
 
 		setVec3("dirLight.direction", direction);
