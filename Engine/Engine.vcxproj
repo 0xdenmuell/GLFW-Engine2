@@ -105,7 +105,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">precom.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="submodules\glad\glad.c" />
-    <ClInclude Include="source\window\window.h" />
     <ClInclude Include="submodules\glad\glad.h" />
     <ClInclude Include="submodules\glfw\include\GLFW\glfw3.h" />
     <ClInclude Include="submodules\glm\glm\glm.hpp" />
@@ -115,6 +114,7 @@
     <ClInclude Include="submodules\KHR\khrplatform.h" />
     <ClInclude Include="submodules\stb\stb_image.h" />
     <ClInclude Include="submodules\std_image.h" />
+    <ClInclude Include="source\window\window.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\Debug\assimp-vc142-mtd.lib" />
