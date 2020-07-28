@@ -44,13 +44,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(ProjectDir)\source;$(ProjectDir)\submodules;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)\lib\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -86,6 +86,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\lib\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -116,19 +117,8 @@
     <ClInclude Include="submodules\std_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Debug\Engine.tlog\CL.command.1.tlog" />
-    <None Include="Debug\Engine.tlog\Engine.lastbuildstate" />
-    <None Include="Debug\Engine.tlog\unsuccessfulbuild" />
-    <None Include="source\shader\glsl\cubeFragment.glsl" />
-    <None Include="source\shader\glsl\cubeVertices.glsl" />
-    <None Include="source\shader\glsl\lightFragment.glsl" />
-    <None Include="source\shader\glsl\lightVertices.glsl" />
-    <None Include="source\shader\glsl\modelFragment.glsl" />
-    <None Include="source\shader\glsl\modelVertices.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="lib\Release\assimp-vc142-mt.lib" />
-    <Library Include="lib\Release\glfw3.lib" />
+    <Library Include="lib\Debug\assimp-vc142-mtd.lib" />
+    <Library Include="lib\Debug\glfw3.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

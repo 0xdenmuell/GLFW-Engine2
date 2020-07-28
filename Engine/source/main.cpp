@@ -1,12 +1,12 @@
 #include <precom.h>
 
 #include <glad/glad.h>
-#include <glfw/include/GLFW/glfw3.h>
+#include <GLFW/glfw3.h>
 
-#include <glm/glm/glm.hpp>
-#include <glm/glm/gtc/matrix_transform.hpp>
-#include <glm/glm/gtc/type_ptr.hpp>
-#include <glm/glm/gtx/string_cast.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <camera/camera.h>
 #include <shader/shader.h>
